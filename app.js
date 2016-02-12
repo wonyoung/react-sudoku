@@ -29,22 +29,23 @@ function dupExists(xs) {
     vs.filter((n, i2) => i !== i2).some(v => v === x));
 }
 function validateCells(rows) {
-  let cellStates = new Array(9).fill().map(n => new Array(9).fill(true));
+  const cellWidth = 9;
+  let cellClassNames = new Array(cellWidth).fill().map(n => new Array(cellWidth).fill("normal"));
 
   rows.forEach((row, y) => {
     const numbers = row.filter(v => v !== 0);
     if (dupExists(numbers)) {
-      for (let x=0;x<cellStates.length;x++) {
-        cellStates[y][x] = false;
+      for (let x=0;x<cellWidth;x++) {
+        cellClassNames[y][x] = "wrongnumber";
       }
     }
   });
 
-  for(let x=0;x<cellStates.length;x++) {
+  for(let x=0;x<cellWidth;x++) {
     const numbers = rows.map(r => r[x]).filter(v => v !== 0);
     if (dupExists(numbers)) {
-      for (let y=0;y<cellStates.length;y++) {
-        cellStates[y][x] = false;
+      for (let y=0;y<cellWidth;y++) {
+        cellClassNames[y][x] = "wrongnumber";
       }
     }
   }
@@ -62,7 +63,7 @@ function validateCells(rows) {
       if (dupExists(numbers)) {
         for (let y=y1;y<y2;y++) {
           for (let x=x1;x<x2;x++) {
-            cellStates[y][x] = false;
+            cellClassNames[y][x] = "wrongnumber";
           }
         }
       }
@@ -72,26 +73,26 @@ function validateCells(rows) {
   // cross rule not exists!
   /*
   const cross1 = rows.map((row,y) => row[y]).filter(v => v !== 0);
-  const cross2 = rows.map((row,y) => row[cellStates.length-1-y])
+  const cross2 = rows.map((row,y) => row[cellWidth-1-y])
     .filter(v => v !== 0);
   if (dupExists(cross1)) {
-    for (let x=0;x<cellStates.length;x++) {
-      cellStates[x][x] = false;
+    for (let x=0;x<cellWidth;x++) {
+      cellClassNames[x][x] = false;
     }
   }
   if (dupExists(cross2)) {
-    for (let x=0;x<cellStates.length;x++) {
-      cellStates[x][cellStates.length-1-x] = false;
+    for (let x=0;x<cellWidth;x++) {
+      cellClassNames[x][cellWidth-1-x] = false;
     }
   }
   */
 
-  return cellStates;
+  return cellClassNames;
 }
 
 class Cell extends React.Component {
   render() {
-    const classname = this.props.valid ? "":"wrongnumber";
+    const classname = this.props.cellClassName;
     return <td className={classname}> { this.props.value } </td>
   }
 }
@@ -108,7 +109,7 @@ class InputCell extends React.Component {
     }
   }
   render() {
-    const classname = this.props.valid ? "":"wrongnumber";
+    const classname = this.props.cellClassName;
     return <td className={classname}><input className={classname}
       type="text"
       ref="cell"
@@ -126,7 +127,7 @@ class Row extends React.Component {
             const value = n > 0 ? n:'';
             return <InputCell
               value={value}
-              valid={this.props.cellStates[i]}
+              cellClassName={this.props.cellClassNames[i]}
               key={i}
               row={this.props.row}
               col={i}
@@ -135,7 +136,7 @@ class Row extends React.Component {
           else {
             return <Cell
               value={n}
-              valid={this.props.cellStates[i]}
+              cellClassName={this.props.cellClassNames[i]}
               key={i}/>
           }
         })}
@@ -153,7 +154,7 @@ class Row3 extends React.Component {
             return <Row
               initValues={this.props.initLines[i]}
               values={line}
-              cellStates={this.props.cellStates[i]}
+              cellClassNames={this.props.cellClassNames[i]}
               key={i}
               row={this.props.row*3+i}
               onInput={this.props.onInput}
@@ -189,7 +190,7 @@ class Sudoku extends React.Component {
 
   render() {
     const rs = this.state.rows;
-    const cellStates = validateCells(rs);
+    const cellClassNames = validateCells(rs);
     return (
       <table>
         <colgroup><col/><col/><col/></colgroup>
@@ -202,7 +203,7 @@ class Sudoku extends React.Component {
             return <Row3
               initLines={this.props.init.slice(r1, r2)}
               lines={this.state.rows.slice(r1, r2)}
-              cellStates={cellStates.slice(r1, r2)}
+              cellClassNames={cellClassNames.slice(r1, r2)}
               key={i}
               row={i}
               onInput={(x,y,v) => this.handleInput(x,y,v)}
