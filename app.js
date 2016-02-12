@@ -1,6 +1,7 @@
 import './app.css';
 import React from 'react';
 import ReactDom from 'react-dom';
+import _ from 'underscore';
 
 const container = document.getElementById('app');
 
@@ -41,66 +42,28 @@ function validateCells(rows) {
   const cellWidth = 9;
   let cellClassNames = new Array(cellWidth).fill().map(n => new Array(cellWidth).fill("normal"));
 
-  rows.forEach((row, y) => {
-    const numbers = row.filter(v => v !== 0);
-    if (dupExists(numbers)) {
-      for (let x=0;x<cellWidth;x++) {
-        cellClassNames[y][x] = "wrongnumber";
-      }
-    }
-    else if (numbers.length === 9) {
-      for (let x=0;x<cellWidth;x++) {
-        if (cellClassNames[y][x] === "normal") {
-          cellClassNames[y][x] = "correctnumber"
-        }
-      }
-    }
-  });
-
-  for(let x=0;x<cellWidth;x++) {
-    const numbers = rows.map(r => r[x]).filter(v => v !== 0);
-    if (dupExists(numbers)) {
-      for (let y=0;y<cellWidth;y++) {
-        cellClassNames[y][x] = "wrongnumber";
-      }
-    }
-    else if (numbers.length === 9) {
-      for (let y=0;y<cellWidth;y++) {
-        if (cellClassNames[y][x] === "normal") {
-          cellClassNames[y][x] = "correctnumber"
-        }
-      }
-    }
-  }
-
-  for(let xb=0;xb<3;xb++) {
-    for(let yb=0;yb<3;yb++) {
-      const x1 = xb * 3;
-      const x2 = (xb + 1) * 3;
-      const y1 = yb * 3;
-      const y2 = (yb + 1) * 3;
-      const numbers = rows[y1].slice(x1, x2)
-        .concat(rows[y1+1].slice(x1, x2))
-        .concat(rows[y1+2].slice(x1, x2))
-        .filter(v => v !== 0);
-      if (dupExists(numbers)) {
-        for (let y=y1;y<y2;y++) {
-          for (let x=x1;x<x2;x++) {
-            cellClassNames[y][x] = "wrongnumber";
-          }
-        }
+  const _validates = function(groupedCells) {
+    for(let p in groupedCells) {
+      const numbers = groupedCells[p].filter(c => c.v !== 0);
+      if (dupExists(numbers.map(c => c.v))) {
+        groupedCells[p].forEach(c => {
+          cellClassNames[c.y][c.x] = "wrongnumber";
+        });
       }
       else if (numbers.length === 9) {
-        for (let y=y1;y<y2;y++) {
-          for (let x=x1;x<x2;x++) {
-            if (cellClassNames[y][x] === "normal") {
-              cellClassNames[y][x] = "correctnumber";
-            }
+        groupedCells[p].forEach(c => {
+          if (cellClassNames[c.y][c.x] === "normal") {
+            cellClassNames[c.y][c.x] = "correctnumber";
           }
-        }
+        });
       }
     }
   }
+
+  const cells = rows.map((row, y) => row.map((v,x) => { return {x, y, v};})).reduce((a,b) => a.concat(b));
+  _validates(_.groupBy(cells, 'y'));
+  _validates(_.groupBy(cells, 'x'));
+  _validates(_.groupBy(cells, c => [Math.floor(c.x/3), Math.floor(c.y/3)]));
 
   return cellClassNames;
 }
@@ -114,7 +77,6 @@ class Cell extends React.Component {
 
 class InputCell extends React.Component {
   handle(evt) {
-    console.log(evt.keyCode);
     if (evt.keyCode >= 49 && evt.keyCode <= 58) {
       this.props.onInput(this.props.col, this.props.row, parseInt(String.fromCharCode(evt.keyCode)));
     }
@@ -154,7 +116,6 @@ class Row extends React.Component {
             const value = n > 0 ? n:'';
             const c = this.props.cursor;
             const focused = c.x === i && c.y === this.props.row;
-            if (focused) console.log(c);
             return <InputCell
               value={value}
               focused={focused}
