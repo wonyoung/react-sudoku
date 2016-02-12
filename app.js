@@ -39,6 +39,13 @@ function validateCells(rows) {
         cellClassNames[y][x] = "wrongnumber";
       }
     }
+    else if (numbers.length === 9) {
+      for (let x=0;x<cellWidth;x++) {
+        if (cellClassNames[y][x] === "normal") {
+          cellClassNames[y][x] = "correctnumber"
+        }
+      }
+    }
   });
 
   for(let x=0;x<cellWidth;x++) {
@@ -46,6 +53,13 @@ function validateCells(rows) {
     if (dupExists(numbers)) {
       for (let y=0;y<cellWidth;y++) {
         cellClassNames[y][x] = "wrongnumber";
+      }
+    }
+    else if (numbers.length === 9) {
+      for (let y=0;y<cellWidth;y++) {
+        if (cellClassNames[y][x] === "normal") {
+          cellClassNames[y][x] = "correctnumber"
+        }
       }
     }
   }
@@ -64,6 +78,15 @@ function validateCells(rows) {
         for (let y=y1;y<y2;y++) {
           for (let x=x1;x<x2;x++) {
             cellClassNames[y][x] = "wrongnumber";
+          }
+        }
+      }
+      else if (numbers.length === 9) {
+        for (let y=y1;y<y2;y++) {
+          for (let x=x1;x<x2;x++) {
+            if (cellClassNames[y][x] === "normal") {
+              cellClassNames[y][x] = "correctnumber";
+            }
           }
         }
       }

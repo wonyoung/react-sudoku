@@ -5,3 +5,4 @@ input { border: none; width: 1.0em; }
 td, input { text-align: center; font-family: "Arial"; font-size: 1.0em; }
 .normal { background-color: white; }
 .wrongnumber { background-color: #ff8833; }
+.correctnumber { background-color: lightgreen; }
