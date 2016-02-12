@@ -93,23 +93,6 @@ function validateCells(rows) {
     }
   }
 
-  // cross rule not exists!
-  /*
-  const cross1 = rows.map((row,y) => row[y]).filter(v => v !== 0);
-  const cross2 = rows.map((row,y) => row[cellWidth-1-y])
-    .filter(v => v !== 0);
-  if (dupExists(cross1)) {
-    for (let x=0;x<cellWidth;x++) {
-      cellClassNames[x][x] = false;
-    }
-  }
-  if (dupExists(cross2)) {
-    for (let x=0;x<cellWidth;x++) {
-      cellClassNames[x][cellWidth-1-x] = false;
-    }
-  }
-  */
-
   return cellClassNames;
 }
 
@@ -122,21 +105,18 @@ class Cell extends React.Component {
 
 class InputCell extends React.Component {
   handle(evt) {
-    const v = parseInt(this.refs.cell.value);
-    if (v > 0 && v < 10) {
-      this.props.onInput(this.props.col, this.props.row, v);
-    }
-    else {
-      this.refs.cell.value = '';
-      this.props.onInput(this.props.col, this.props.row, 0);
-    }
+//    console.log(evt.keyCode);
+    const input = parseInt(String.fromCharCode(evt.keyCode));
+    const v = (input > 0 && input < 10) ? input:0;
+    this.props.onInput(this.props.col, this.props.row, v);
   }
   render() {
     const classname = this.props.cellClassName;
     return <td className={classname}><input className={classname}
       type="text"
       ref="cell"
-      onChange={evt => this.handle(evt)}
+      value = {this.props.value}
+      onKeyDown={evt => this.handle(evt)}
       /></td>
   }
 }
