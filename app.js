@@ -169,20 +169,16 @@ class Sudoku extends React.Component {
   constructor(props) {
     super(props);
     const rows = deepCopy(this.props.init);
-    const cellStates = validateCells(rows);
     this.state = {
-      rows,
-      cellStates
+      rows
     };
   }
 
   nextState(x, y, v) {
     let rows = deepCopy(this.state.rows);
     rows[y][x] = v;
-    let cellStates = validateCells(rows);
     return {
-      rows,
-      cellStates
+      rows
     };
   }
 
@@ -193,6 +189,7 @@ class Sudoku extends React.Component {
 
   render() {
     const rs = this.state.rows;
+    const cellStates = validateCells(rs);
     return (
       <table>
         <colgroup><col/><col/><col/></colgroup>
@@ -205,7 +202,7 @@ class Sudoku extends React.Component {
             return <Row3
               initLines={this.props.init.slice(r1, r2)}
               lines={this.state.rows.slice(r1, r2)}
-              cellStates={this.state.cellStates.slice(r1, r2)}
+              cellStates={cellStates.slice(r1, r2)}
               key={i}
               row={i}
               onInput={(x,y,v) => this.handleInput(x,y,v)}
