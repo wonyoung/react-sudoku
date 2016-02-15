@@ -1,7 +1,7 @@
 table { border-collapse: collapse; border: solid thick; }
 colgroup, tbody { border: solid medium; }
 td { border: solid thin; height: 1.5em; width: 1.5em; text-align: center; padding: 0; cursor: default; }
-input { border: none; width: 1.0em; }
+input { border: none; width: 1.0em; color: gray; }
 td, input { text-align: center; font-family: "Arial"; font-size: 1.0em; }
 .normal { background-color: white; }
 .wrongnumber { background-color: #ff8833; }
