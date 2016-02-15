@@ -84,8 +84,12 @@ class InputCell extends React.Component {
       this.props.onInput(this.props.col, this.props.row, 0);
     }
     else if (evt.keyCode >= 37 && evt.keyCode <= 40) {
-      this.props.onMove(evt.keyCode);
+      this.props.onMove(this.props.col, this.props.row, evt.keyCode);
     }
+  }
+
+  handleFocus() {
+    this.props.onMove(this.props.col, this.props.row, 0);
   }
 
   componentDidMount() {
@@ -103,6 +107,7 @@ class InputCell extends React.Component {
       ref={c => this._input = c}
       value = {this.props.value}
       onKeyDown={evt => this.handle(evt)}
+      onFocus={_ => this.handleFocus()}
       /></td>
   }
 }
@@ -190,8 +195,8 @@ class Sudoku extends React.Component {
     this.setState(newState);
   }
 
-  handleCursor(keycode) {
-    let cursor = deepCopy(this.state.cursor);
+  handleCursor(x, y, keycode) {
+    let cursor = {x, y};
     if (keycode === 37) {
       let x = cursor.x;
       for(let x=cursor.x-1;x>=0;x--) {
@@ -251,7 +256,7 @@ class Sudoku extends React.Component {
               key={i}
               row={i}
               onInput={(x,y,v) => this.handleInput(x,y,v)}
-              onMove={keyCode => this.handleCursor(keyCode)}
+              onMove={(x,y,keyCode) => this.handleCursor(x,y,keyCode)}
               />
           })
         }
